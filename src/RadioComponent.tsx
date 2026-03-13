@@ -3,12 +3,13 @@ import { useState, useRef } from "react";
 export default function RadioComponent() {
   const [playing, setPlaying] = useState(false);
   const [radioURL, setRadioURL] = useState("https://az1.mediacp.eu/listen/airport-lounge-radio/stream/1/");
+  const [volume, setVolume] = useState(0.5); // default volume is 50%.
   const player = useRef<HTMLAudioElement | null>(null); // useRef allows a component to persist 
 
   // TODO: read up on JS objects and try some excercises. 
-  //       do some sort of validation to prevent new audio objects being created (ensure only one stream plays at once). 
+  //       do some sort of validation to prevent new audio objects being created (ensure only one stream plays at once). -- done
   //       general cleanup 
-  //       also a volume slider/control would be nice 
+  //       also a volume slider/control would be nice -- done 
 
   // TODO: maybe at some point pull header data from the stream and display it in the player. 
   //       -> maybe some fancy scrolling text like in winamp would be cool.   
@@ -19,7 +20,7 @@ export default function RadioComponent() {
     console.log(`player.current: ${player.current}`); // backtick strings are a lot like fstrings in python. 
     if (player.current === null && !playing) { // this bit of code seems to work to prevent multiple streams playing at once. 
       player.current = new Audio(radioURL);
-      player.current.volume = 0.15; // this is a value between 1 (100%), and 0 (0%). 
+      player.current.volume = volume; // this is a value between 1 (100%), and 0 (0%). 
       setPlaying(true);
       player.current.play();
     }
@@ -36,6 +37,11 @@ export default function RadioComponent() {
     }
   };
 
+  const changeVolume = function (e: React.ChangeEvent<HTMLInputElement>) {
+    setVolume(parseFloat(e.target.value) / 100);
+    player.current!.volume = volume;
+  }
+
   return (
     <>
       <div className="radiocomponentcontainer" style={{
@@ -49,12 +55,14 @@ export default function RadioComponent() {
         margin: "0 auto"
       }}>
         <div className="fakescreen" style={{ backgroundColor: "green" }} >
-          <h1 style={{ fontFamily: "Seven Segment", color: "black", userSelect: "none" }}>{playing ? 'Playing' : 'Paused'}</h1>
+          <h1>{playing ? 'Playing' : 'Paused'}</h1>
+          <h1 className="volumetext" style={{ textAlign: "left", marginTop: "-10px", fontSize: "1em" }}>Vol: {volume}</h1>
         </div>
         <div className="radiobuttoncontainer" style={{ display: "flex", width: "auto" }}>
           <button className="radiobutton" onClick={play}>Play</button> {/* this is a misleading name because it's not a radio button */}
           <button className="radiobutton" onClick={pause}>Pause</button><br></br>
         </div>
+        <input type="range" id="slider" className="volumeslider" min="0" max="100" onChange={(e) => changeVolume(e)}></input>
         <div className="stationjumper">
           <input type="text" name="urlbox" id="urlbox" defaultValue="Enter a URL..." onChange={(e) => setRadioURL(e.target.value)} />
         </div>
