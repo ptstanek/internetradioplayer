@@ -38,8 +38,13 @@ export default function RadioComponent() {
   };
 
   const changeVolume = function (e: React.ChangeEvent<HTMLInputElement>) {
-    setVolume(parseFloat(e.target.value) / 100);
-    player.current!.volume = volume;
+    if (player.current) {
+      // horrid work. this line fixes the issue with number rounding.
+      // you'd set the slider to zero but the value would actually be like 0.05 or something and you'd still hear the stream.       
+      let volumeValue = Math.round(parseFloat(e.target.value))/100;
+      setVolume(volumeValue);
+      player.current!.volume = volumeValue;
+    }
   }
 
   return (
@@ -56,7 +61,7 @@ export default function RadioComponent() {
       }}>
         <div className="fakescreen" style={{ backgroundColor: "green" }} >
           <h1>{playing ? 'Playing' : 'Paused'}</h1>
-          <h1 className="volumetext" style={{ textAlign: "left", marginTop: "-10px", fontSize: "1em" }}>Vol: {volume}</h1>
+          <h1 className="volumetext" style={{ textAlign: "left", marginTop: "-10px", fontSize: "1em" }}>Vol: {Math.round(volume*100)}%</h1>
         </div>
         <div className="radiobuttoncontainer" style={{ display: "flex", width: "auto" }}>
           <button className="radiobutton" onClick={play}>Play</button> {/* this is a misleading name because it's not a radio button */}
