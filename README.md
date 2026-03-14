@@ -7,6 +7,6 @@ Run ```npm install``` to install packages.
 ## Running Dev Server
 Run ```npm run dev``` to start the development server. 
 ## Future Goals:
-- Volume Slider
+- ~~Volume Slider~~ -- done! 
 - Grabbing stream information from the URL and displaying it in the player.
 - Scrolling text (like in Winamp). 
